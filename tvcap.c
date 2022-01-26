@@ -21,10 +21,10 @@ handle_udp(const u_char *data)
 static void
 handle_ip4(const u_char *data)
 {
-	struct iphdr *ip = (void *)data;
+	struct ip *ip = (void *)data;
 
-	if (ip->protocol == IPPROTO_UDP)
-		handle_udp(data + ip->ihl * 4);
+	if (ip->ip_p == IPPROTO_UDP)
+		handle_udp(data + ip->ip_hl * 4);
 }
 
 static void
