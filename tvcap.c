@@ -79,12 +79,8 @@ main()
 			errx(1, "len != caplen");
 
 		switch (pcap_datalink(pcap)) {
-		case DLT_EN10MB:
-			handle_ethernet(data);
-			break;
-		case DLT_LINUX_SLL:
-			handle_sll(data);
-			break;
+		case DLT_EN10MB:    handle_ethernet(data); break;
+		case DLT_LINUX_SLL: handle_sll(data); break;
 		default:
 			errx(1, "unsupported pcap_datalink() type");
 		}
