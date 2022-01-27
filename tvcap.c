@@ -1,13 +1,21 @@
 #include <stdio.h>
 #include <string.h>
 #include <err.h>
-#include <net/ethernet.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <netinet/ip6.h>
 #include <netinet/udp.h>
 #include <pcap/pcap.h>
-#include <pcap/sll.h>
+
+#if __NetBSD__
+# include <net/if_ether.h>
+#else
+# include <net/ethernet.h>
+#endif
+
+#if __linux__
+# include <pcap/sll.h>
+#endif
 
 static void
 handle_udp(const u_char *data)
@@ -36,6 +44,7 @@ handle_ip6(const u_char *data)
 		handle_udp(data + sizeof(*ip6));
 }
 
+#ifdef __linux__
 static void
 handle_sll(const u_char *data)
 {
@@ -46,6 +55,7 @@ handle_sll(const u_char *data)
 	case ETHERTYPE_IPV6: handle_ip6(data + sizeof(*sll)); break;
 	}
 }
+#endif
 
 static void
 handle_ethernet(const u_char *data)
@@ -83,8 +93,10 @@ main()
 
 		switch (dlt) {
 		case DLT_EN10MB:    handle_ethernet(data); break;
-		case DLT_LINUX_SLL: handle_sll(data); break;
 		case DLT_RAW:       handle_ip4(data); break;
+#ifdef __linux__
+		case DLT_LINUX_SLL: handle_sll(data); break;
+#endif
 		default:
 			errx(1, "unsupported datalinkt type: %d", dlt);
 		}
