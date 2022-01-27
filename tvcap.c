@@ -96,7 +96,7 @@ main(int argc, char **argv)
 	if (argc)
 		device = argv[0];
 
-	if (!(pcap = pcap_open_live(device, 4096, 0, 1000, errbuf)))
+	if (!(pcap = pcap_open_live(device, 4096, 0, 0, errbuf)))
 		errx(1, "%s", errbuf);
 	if (pcap_compile(pcap, &filter, "udp port 7252", 0, 0))
 		errx(1, "%s", pcap_geterr(pcap));
