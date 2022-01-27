@@ -63,6 +63,7 @@ main()
 {
 	char errbuf[PCAP_ERRBUF_SIZE];
 	pcap_t *pcap;
+	int dlt;
 	struct bpf_program filter;
 	struct pcap_pkthdr header;
 	const u_char *data;
@@ -74,15 +75,18 @@ main()
 	if (pcap_setfilter(pcap, &filter))
 		errx(1, "%s", pcap_geterr(pcap));
 
+	dlt = pcap_datalink(pcap);
+
 	while ((data = pcap_next(pcap, &header))) {
 		if (header.len != header.caplen)
 			errx(1, "len != caplen");
 
-		switch (pcap_datalink(pcap)) {
+		switch (dlt) {
 		case DLT_EN10MB:    handle_ethernet(data); break;
 		case DLT_LINUX_SLL: handle_sll(data); break;
+		case DLT_RAW:       handle_ip4(data); break;
 		default:
-			errx(1, "unsupported pcap_datalink() type");
+			errx(1, "unsupported datalinkt type: %d", dlt);
 		}
 	}
 
