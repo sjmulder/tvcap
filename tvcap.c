@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <getopt.h>
+#include <sysexits.h>
 #include <err.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
@@ -69,16 +71,32 @@ handle_ethernet(const u_char *data)
 }
 
 int
-main()
+main(int argc, char **argv)
 {
 	char errbuf[PCAP_ERRBUF_SIZE];
+	const char *device = "any";
 	pcap_t *pcap;
-	int dlt;
+	int dlt, c;
 	struct bpf_program filter;
 	struct pcap_pkthdr header;
 	const u_char *data;
 
-	if (!(pcap = pcap_open_live("any", 4096, 0, 1000, errbuf)))
+	while ((c = getopt(argc, argv, "")) != -1)
+		switch (c) {
+		default:
+			fputs("usage: tvcap [device]\n", stderr);
+			return EX_USAGE;
+		}
+
+	argc -= optind;
+	argv += optind;
+
+	if (argc > 1)
+		errx(EX_USAGE, "too many arguments");
+	if (argc)
+		device = argv[0];
+
+	if (!(pcap = pcap_open_live(device, 4096, 0, 1000, errbuf)))
 		errx(1, "%s", errbuf);
 	if (pcap_compile(pcap, &filter, "udp port 7252", 0, 0))
 		errx(1, "%s", pcap_geterr(pcap));
