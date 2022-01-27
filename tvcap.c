@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <getopt.h>
 #include <sysexits.h>
@@ -74,17 +75,22 @@ int
 main(int argc, char **argv)
 {
 	char errbuf[PCAP_ERRBUF_SIZE];
+	char filter_s[32];
 	const char *device = "any";
 	pcap_t *pcap;
-	int dlt, c;
+	int port=7252, dlt, c;
 	struct bpf_program filter;
 	struct pcap_pkthdr header;
 	const u_char *data;
 
-	while ((c = getopt(argc, argv, "")) != -1)
+	while ((c = getopt(argc, argv, "p:")) != -1)
 		switch (c) {
+		case 'p':
+			if ((port = atoi(optarg)) < 1)
+				errx(1, "bad port");
+			break;
 		default:
-			fputs("usage: tvcap [device]\n", stderr);
+			fputs("usage: tvcap [-p port] [device]\n", stderr);
 			return EX_USAGE;
 		}
 
@@ -96,9 +102,11 @@ main(int argc, char **argv)
 	if (argc)
 		device = argv[0];
 
+	snprintf(filter_s, sizeof(filter_s), "udp port %d\n", port);
+
 	if (!(pcap = pcap_open_live(device, 4096, 1, 0, errbuf)))
 		errx(1, "%s", errbuf);
-	if (pcap_compile(pcap, &filter, "udp port 7252", 0, 0))
+	if (pcap_compile(pcap, &filter, filter_s, 0, 0))
 		errx(1, "%s", pcap_geterr(pcap));
 	if (pcap_setfilter(pcap, &filter))
 		errx(1, "%s", pcap_geterr(pcap));
