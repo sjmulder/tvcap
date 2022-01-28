@@ -4,6 +4,7 @@
 #include <getopt.h>
 #include <sysexits.h>
 #include <err.h>
+#include <sys/types.h>	/* u_char on FreeBSD */
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <netinet/ip6.h>
