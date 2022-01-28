@@ -17,6 +17,8 @@
 # include <sys/socket.h>
 # include <net/if_arp.h>
 # include <netinet/if_ether.h>
+#elif defined(__sun)
+# include <sys/ethernet.h>
 #else
 # include <net/ethernet.h>
 #endif
