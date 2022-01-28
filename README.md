@@ -3,7 +3,7 @@ tvcap
 Capture and dump multicast IPTV streams. (Or, technically, any UDP
 stream to a given port.)
 
-**tvdump** [-p *port*] [*device*]
+**tvdump** [-p *port*] [*interface*]
 
 ![Screenshot](https://sjmulder.nl/i/tvcap.png)
 
@@ -13,8 +13,11 @@ to a video player:
 
     sudo ./tvdump | mpv -
 
-By default UDP ports to port 7252 are captured on the "any" pcap
-interface. A different port or interface (e.g. `enp0`) may be provided.
+By default UDP port 7252 is captured on the `any` pcap interface. A
+different port or interface (e.g. `enp0`) may be provided, e.g. to
+capture UDP packets on port 1234 on network interface `enp0`:
+
+    ./tvdump -p 1234 enp0
 
 May require tweaks to work with other set ups.
 
