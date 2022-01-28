@@ -131,7 +131,7 @@ main(int argc, char **argv)
 		case DLT_LINUX_SLL: handle_sll(data); break;
 #endif
 		default:
-			errx(1, "unsupported datalinkt type: %d", dlt);
+			errx(1, "unsupported datalink type: %d", dlt);
 		}
 	}
 
