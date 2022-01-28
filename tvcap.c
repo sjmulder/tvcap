@@ -8,15 +8,19 @@
 #include <netinet/ip.h>
 #include <netinet/ip6.h>
 #include <netinet/udp.h>
-#include <pcap/pcap.h>
+#include <pcap.h>
 
-#if __NetBSD__
+#if defined(__NetBSD__)
 # include <net/if_ether.h>
+#elif defined(__OpenBSD__)
+# include <sys/socket.h>
+# include <net/if_arp.h>
+# include <netinet/if_ether.h>
 #else
 # include <net/ethernet.h>
 #endif
 
-#if __linux__
+#if defined(__linux__)
 # include <pcap/sll.h>
 #endif
 
